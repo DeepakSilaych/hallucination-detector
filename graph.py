@@ -3,7 +3,7 @@ from state import GraphState
 from nodes import (
     claim_decomposer,
     retrieval,
-    self_consistency,
+    expert_analysis,
     tool_validation,
     evidence_aggregator,
     verifier,
@@ -14,7 +14,7 @@ from nodes import (
 
 
 def _fan_out(_state: GraphState) -> list[str]:
-    return ["retrieval", "self_consistency", "tool_validation"]
+    return ["retrieval", "expert_analysis", "tool_validation"]
 
 
 def _route_decision(state: GraphState) -> str:
@@ -26,7 +26,7 @@ def build_graph():
 
     builder.add_node("claim_decomposer", claim_decomposer.run)
     builder.add_node("retrieval", retrieval.run)
-    builder.add_node("self_consistency", self_consistency.run)
+    builder.add_node("expert_analysis", expert_analysis.run)
     builder.add_node("tool_validation", tool_validation.run)
     builder.add_node("evidence_aggregator", evidence_aggregator.run)
     builder.add_node("verifier", verifier.run)
@@ -39,7 +39,7 @@ def build_graph():
     builder.add_conditional_edges("claim_decomposer", _fan_out)
 
     builder.add_edge("retrieval", "evidence_aggregator")
-    builder.add_edge("self_consistency", "evidence_aggregator")
+    builder.add_edge("expert_analysis", "evidence_aggregator")
     builder.add_edge("tool_validation", "evidence_aggregator")
 
     builder.add_edge("evidence_aggregator", "verifier")

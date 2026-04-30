@@ -8,9 +8,6 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
 LLM_MODEL = "gemini-2.5-flash"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
 
-CONSISTENCY_TEMPERATURE = 0.9
-CONSISTENCY_SAMPLES = 3
-
 RETRIEVAL_TOP_K = 3
 
 SCORE_SUPPORTED = 1.0

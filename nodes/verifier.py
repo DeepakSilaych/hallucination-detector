@@ -19,7 +19,11 @@ def run(state: GraphState) -> dict:
     results = []
     for item in evidence_list:
         retrieval_text = "\n".join(item.get("retrieval", []))
-        consistency_text = "\n---\n".join(item.get("consistency", []))
+        expert_entries = item.get("expert_analyses", [])
+        consistency_text = "\n---\n".join(
+            f"[{e.get('persona', 'Expert')}]: {e.get('answer', '')}"
+            for e in expert_entries
+        )
         tool_text = item.get("tool", "No data available")
 
         prompt = VERIFY_CLAIM.format(

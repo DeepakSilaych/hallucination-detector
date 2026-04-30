@@ -13,8 +13,19 @@ CLAIM_DECOMPOSE = (
     "Claims:"
 )
 
-CONSISTENCY_CHECK = (
-    "Answer the following question accurately and concisely.\n\n"
+EXPERT_PERSONA = (
+    "Given the following question, identify the most relevant expert who would be "
+    "best qualified to answer it. Return ONLY a short description of the expert "
+    "(e.g. 'Astrophysicist specializing in planetary science').\n\n"
+    "Question: {query}\n\n"
+    "Expert #{index} (choose a different specialty than: {previous}):\n"
+    "Expert:"
+)
+
+EXPERT_ANSWER = (
+    "You are {persona}.\n\n"
+    "Answer the following question using your domain expertise. "
+    "Be accurate, concise, and cite specific facts where possible.\n\n"
     "Question: {query}\n\n"
     "Answer:"
 )
@@ -23,7 +34,7 @@ VERIFY_CLAIM = (
     "You are a fact-checking judge. Classify the claim based on the provided evidence.\n\n"
     "Claim: {claim}\n\n"
     "Retrieval Evidence:\n{retrieval_evidence}\n\n"
-    "Self-Consistency Evidence (multiple independently generated answers):\n{consistency_evidence}\n\n"
+    "Expert Analysis (answers from domain experts):\n{consistency_evidence}\n\n"
     "Tool Validation Evidence:\n{tool_evidence}\n\n"
     "Classify as exactly one of: Supported, Contradicted, Not Enough Info\n\n"
     "Respond with ONLY the classification.\n\n"

@@ -4,21 +4,24 @@ from typing import Any, Iterable
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from graph import build_graph
 
 APP_DIR = Path(__file__).resolve().parent
-WEB_INDEX = APP_DIR / "web" / "index.html"
+WEB_DIR = APP_DIR / "web"
+WEB_INDEX = WEB_DIR / "index.html"
 
 app = FastAPI(title="Hallucination Detector")
+app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 _graph = None
 
 STATE_KEYS = [
     "claims",
     "retrieved_docs",
-    "consistency_answers",
+    "expert_analyses",
     "tool_results",
     "evidence",
     "verification_results",
@@ -32,7 +35,7 @@ STATE_KEYS = [
 NODE_ORDER = [
     "claim_decomposer",
     "retrieval",
-    "self_consistency",
+    "expert_analysis",
     "tool_validation",
     "evidence_aggregator",
     "verifier",
