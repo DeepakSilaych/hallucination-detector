@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hallucination Detector</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f7f2e8;
+        --bg-2: #efe6d4;
+        --card: #fff8ec;
+        --ink: #1d1b19;
+        --muted: #6a6259;
+        --accent: #0f7b6c;
+        --accent-2: #f2a541;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        --radius: 18px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #fffdf7 0%, transparent 55%),
+          radial-gradient(circle at 10% 20%, #f4d9b2 0%, transparent 38%),
+          linear-gradient(135deg, var(--bg), var(--bg-2));
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 48px 24px 64px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 32px;
+        animation: fadeUp 0.7s ease both;
+      }
+
+      .badge {
+        align-self: flex-start;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(15, 123, 108, 0.12);
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      h1 {
+        font-family: "Fraunces", serif;
+        font-size: clamp(2.4rem, 3vw, 3.4rem);
+        margin: 0;
+      }
+
+      header p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 720px;
+        line-height: 1.6;
+      }
+
+      .grid {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 24px;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(29, 27, 25, 0.08);
+        animation: fadeUp 0.7s ease both;
+      }
+
+      .card h2 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.3rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid rgba(29, 27, 25, 0.2);
+        padding: 12px 14px;
+        font-size: 0.98rem;
+        background: #fff;
+        transition: border 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(15, 123, 108, 0.18);
+      }
+
+      .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .primary {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 10px 25px rgba(15, 123, 108, 0.25);
+      }
+
+      .secondary {
+        background: rgba(242, 165, 65, 0.18);
+        color: #7d4c00;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      .status {
+        margin-top: 16px;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(15, 123, 108, 0.12);
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      .list {
+        margin: 0;
+        padding-left: 18px;
+        line-height: 1.5;
+      }
+
+      .section-title {
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .node-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .node-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(29, 27, 25, 0.1);
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      .node-status {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(29, 27, 25, 0.08);
+        color: var(--muted);
+      }
+
+      .node-status.pending {
+        background: rgba(106, 98, 89, 0.15);
+      }
+
+      .node-status.running {
+        background: rgba(242, 165, 65, 0.25);
+        color: #7d4c00;
+      }
+
+      .node-status.complete {
+        background: rgba(15, 123, 108, 0.2);
+        color: var(--accent);
+      }
+
+      .node-status.skipped {
+        background: rgba(29, 27, 25, 0.12);
+      }
+
+      .node-status.error {
+        background: rgba(125, 26, 0, 0.18);
+        color: #7d1a00;
+      }
+
+      .log {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .evidence-card {
+        background: #fffdf7;
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid rgba(29, 27, 25, 0.08);
+      }
+
+      details {
+        border-radius: 12px;
+        padding: 10px 12px;
+        background: rgba(15, 123, 108, 0.08);
+      }
+
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      pre {
+        background: #1f1c18;
+        color: #fef7e7;
+        padding: 16px;
+        border-radius: 12px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .error {
+        color: #7d1a00;
+        background: rgba(242, 165, 65, 0.2);
+        padding: 10px 12px;
+        border-radius: 12px;
+      }
+
+      footer {
+        margin-top: 32px;
+        color: var(--muted);
+        text-align: center;
+        font-size: 0.9rem;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <div class="badge">Hallucination Detector</div>
+        <h1>Inspect how claims flow through the pipeline</h1>
+        <p>
+          Paste a question, the model answer, and the reasoning. The backend will
+          decompose claims, gather evidence, and score the output.
+        </p>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Input</h2>
+          <form id="analysis-form">
+            <div class="stack">
+              <div>
+                <label for="query">Query</label>
+                <textarea id="query" required></textarea>
+              </div>
+              <div>
+                <label for="answer">Answer</label>
+                <textarea id="answer" required></textarea>
+              </div>
+              <div>
+                <label for="process">Reasoning or process</label>
+                <textarea id="process"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="primary" type="submit">Run analysis</button>
+              <button class="secondary" type="button" id="sample">Load sample</button>
+            </div>
+            <div id="status" class="status"></div>
+          </form>
+          <div class="stack" id="live-panel"></div>
+        </section>
+
+        <section class="card">
+          <h2>Output</h2>
+          <div class="stack" id="output">
+            <div class="pill">Waiting for analysis</div>
+          </div>
+        </section>
+      </main>
+
+      <footer>Powered by FastAPI and Gemini</footer>
+    </div>
+
+    <script>
+      const form = document.getElementById("analysis-form");
+      const output = document.getElementById("output");
+      const statusEl = document.getElementById("status");
+      const sampleBtn = document.getElementById("sample");
+      const livePanel = document.getElementById("live-panel");
+
+      const sample = {
+        query: "Is it true that the Earth is flat?",
+        answer: "Yes, the Earth is flat. It has been proven by many scientists.",
+        process:
+          "The user asked about the shape of the Earth. I recalled that there are flat Earth theories. Based on this, I concluded the Earth is flat and scientists have confirmed it.",
+      };
+
+      const defaultNodes = [
+        "claim_decomposer",
+        "retrieval",
+        "self_consistency",
+        "tool_validation",
+        "evidence_aggregator",
+        "verifier",
+        "scoring",
+        "routing",
+        "fallback",
+      ];
+
+      let nodeElements = {};
+      let nodeOrder = [...defaultNodes];
+      let liveStatePre = null;
+      let logList = null;
+      let completedNodes = new Set();
+
+      sampleBtn.addEventListener("click", () => {
+        document.getElementById("query").value = sample.query;
+        document.getElementById("answer").value = sample.answer;
+        document.getElementById("process").value = sample.process;
+      });
+
+      function setStatus(text) {
+        statusEl.textContent = text;
+      }
+
+      function clearOutput() {
+        output.innerHTML = "";
+      }
+
+      function clearLive() {
+        livePanel.innerHTML = "";
+      }
+
+      function initLiveUI(nodes) {
+        clearLive();
+        nodeElements = {};
+        completedNodes = new Set();
+        nodeOrder = nodes && nodes.length ? nodes : [...defaultNodes];
+
+        const pipeline = document.createElement("ul");
+        pipeline.className = "node-list";
+        nodeOrder.forEach((node) => {
+          const item = document.createElement("li");
+          item.className = "node-item";
+
+          const label = document.createElement("span");
+          label.textContent = node;
+
+          const status = document.createElement("span");
+          status.className = "node-status pending";
+          status.textContent = "pending";
+          nodeElements[node] = status;
+
+          item.appendChild(label);
+          item.appendChild(status);
+          pipeline.appendChild(item);
+        });
+
+        addSectionTo(livePanel, "Pipeline status", pipeline);
+
+        liveStatePre = document.createElement("pre");
+        liveStatePre.textContent = "{}";
+        addSectionTo(livePanel, "Live state", liveStatePre);
+
+        logList = document.createElement("ul");
+        logList.className = "log";
+        addSectionTo(livePanel, "Event log", logList);
+      }
+
+      function setNodeStatus(node, status) {
+        const element = nodeElements[node];
+        if (!element) {
+          return;
+        }
+        const normalized = status.toLowerCase();
+        element.className = `node-status ${normalized}`;
+        element.textContent = normalized;
+        if (normalized === "complete") {
+          completedNodes.add(node);
+        }
+      }
+
+      function addLog(message) {
+        if (!logList) {
+          return;
+        }
+        const item = document.createElement("li");
+        item.textContent = message;
+        logList.appendChild(item);
+      }
+
+      function addSectionTo(container, title, element) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "stack";
+        const heading = document.createElement("div");
+        heading.className = "section-title";
+        heading.textContent = title;
+        wrapper.appendChild(heading);
+        wrapper.appendChild(element);
+        container.appendChild(wrapper);
+      }
+
+      function addSection(title, element) {
+        addSectionTo(output, title, element);
+      }
+
+      function renderList(items) {
+        const list = document.createElement("ul");
+        list.className = "list";
+        items.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = item;
+          list.appendChild(li);
+        });
+        return list;
+      }
+
+      function renderEvidence(evidence) {
+        const container = document.createElement("div");
+        container.className = "stack";
+        evidence.forEach((entry) => {
+          const block = document.createElement("div");
+          block.className = "evidence-card stack";
+
+          const claim = document.createElement("div");
+          claim.className = "section-title";
+          claim.textContent = entry.claim;
+          block.appendChild(claim);
+
+          const retrieval = document.createElement("details");
+          const retrievalSummary = document.createElement("summary");
+          retrievalSummary.textContent = "Retrieval evidence";
+          retrieval.appendChild(retrievalSummary);
+          retrieval.appendChild(renderList(entry.retrieval || []));
+          block.appendChild(retrieval);
+
+          const consistency = document.createElement("details");
+          const consistencySummary = document.createElement("summary");
+          consistencySummary.textContent = "Consistency answers";
+          consistency.appendChild(consistencySummary);
+          consistency.appendChild(renderList(entry.consistency || []));
+          block.appendChild(consistency);
+
+          const tool = document.createElement("details");
+          const toolSummary = document.createElement("summary");
+          toolSummary.textContent = "Tool validation";
+          tool.appendChild(toolSummary);
+          const toolText = document.createElement("div");
+          toolText.textContent = entry.tool || "No tool output";
+          tool.appendChild(toolText);
+          block.appendChild(tool);
+
+          container.appendChild(block);
+        });
+        return container;
+      }
+
+      function renderScores(scores, finalScore, confidence, decision) {
+        const container = document.createElement("div");
+        container.className = "stack";
+
+        const scoreLine = document.createElement("div");
+        scoreLine.textContent = `Final score: ${finalScore}`;
+        container.appendChild(scoreLine);
+
+        const confidenceLine = document.createElement("div");
+        confidenceLine.textContent = `Confidence: ${confidence}`;
+        container.appendChild(confidenceLine);
+
+        const decisionLine = document.createElement("div");
+        decisionLine.textContent = `Decision: ${decision}`;
+        container.appendChild(decisionLine);
+
+        if (scores) {
+          const scoreList = renderList(
+            Object.entries(scores).map(([key, value]) => `${key}: ${value}`)
+          );
+          container.appendChild(scoreList);
+        }
+        return container;
+      }
+
+      async function streamAnalysis(payload) {
+        setStatus("Connecting...");
+        clearOutput();
+        initLiveUI(defaultNodes);
+
+        const response = await fetch("/api/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Request failed");
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          const parts = buffer.split("\n\n");
+          buffer = parts.pop() || "";
+          parts.forEach((block) => {
+            const lines = block.split("\n");
+            let eventName = "message";
+            let data = "";
+            lines.forEach((line) => {
+              if (line.startsWith("event:")) {
+                eventName = line.slice(6).trim();
+              } else if (line.startsWith("data:")) {
+                data += line.slice(5).trimStart();
+              }
+            });
+            if (!data) {
+              return;
+            }
+
+            let payloadData = null;
+            try {
+              payloadData = JSON.parse(data);
+            } catch (error) {
+              return;
+            }
+
+            if (eventName === "meta" && payloadData.nodes) {
+              initLiveUI(payloadData.nodes);
+              addLog("Pipeline initialized");
+            }
+
+            if (eventName === "status") {
+              setStatus("Running analysis...");
+              addLog("Run started");
+            }
+
+            if (eventName === "node") {
+              setNodeStatus(payloadData.node, "complete");
+              if (liveStatePre) {
+                liveStatePre.textContent = JSON.stringify(
+                  payloadData.state || {},
+                  null,
+                  2
+                );
+              }
+              addLog(`${payloadData.node} completed`);
+            }
+
+            if (eventName === "error") {
+              setStatus("Error");
+              const err = document.createElement("div");
+              err.className = "error";
+              err.textContent = `Error: ${payloadData.message}`;
+              livePanel.appendChild(err);
+            }
+
+            if (eventName === "done") {
+              setStatus("Done.");
+              if (liveStatePre) {
+                liveStatePre.textContent = JSON.stringify(
+                  payloadData.state || {},
+                  null,
+                  2
+                );
+              }
+
+              nodeOrder.forEach((node) => {
+                if (!completedNodes.has(node)) {
+                  setNodeStatus(node, "skipped");
+                }
+              });
+
+              const dataFinal = payloadData.state || {};
+              addSection("Claims", renderList(dataFinal.claims || []));
+              addSection(
+                "Consistency answers",
+                renderList(dataFinal.consistency_answers || [])
+              );
+              addSection(
+                "Verification results",
+                renderList(
+                  (dataFinal.verification_results || []).map(
+                    (item) => `${item.claim}: ${item.verdict}`
+                  )
+                )
+              );
+              addSection(
+                "Scores",
+                renderScores(
+                  dataFinal.scores,
+                  dataFinal.final_score,
+                  dataFinal.confidence,
+                  dataFinal.decision
+                )
+              );
+              addSection("Evidence", renderEvidence(dataFinal.evidence || []));
+
+              const raw = document.createElement("pre");
+              raw.textContent = JSON.stringify(dataFinal, null, 2);
+              addSection("Raw JSON", raw);
+            }
+          });
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const payload = {
+          query: document.getElementById("query").value.trim(),
+          answer: document.getElementById("answer").value.trim(),
+          process: document.getElementById("process").value.trim(),
+        };
+
+        try {
+          await streamAnalysis(payload);
+        } catch (error) {
+          const err = document.createElement("div");
+          err.className = "error";
+          err.textContent = `Error: ${error.message}`;
+          output.appendChild(err);
+          setStatus("Something went wrong.");
+        }
+      });
+    </script>
+  </body>
+</html>
