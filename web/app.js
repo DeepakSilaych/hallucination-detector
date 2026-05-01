@@ -9,14 +9,19 @@ const answerEl = document.getElementById("answer");
 const processEl = document.getElementById("process");
 
 const SAMPLES = [
-  "What is the required coolant flow rate for the GT-500 engine and what happens if it drops too low?",
-  "What are the current mandatory operating specifications for the GT-500 cooling system?",
+  "Which magazine was started first Arthur's Magazine or First for Women?",
+  "The Oberoi family is part of a hotel company that has a head office in what city?",
+  "What nationality was James Henry Miller's wife?",
+  "The 1988 American comedy film, The Great Outdoors, starred a four-time Academy Award nominee, who received a star on the Hollywood Walk of Fame in what year?",
+  "The Dutch-Belgian television series that House of Anubis was based on first aired in what year?",
+  "How old is the female main protagonist of Catching Fire?",
+  "Who is the director of the 2003 film which has scenes filmed at the Quality Cafe in Los Angeles?",
+  "Are both The New Pornographers and Kings of Leon American rock bands?",
+  "Which band was founded first, Hole or The Wolfhounds?",
+  "750 7th Avenue and 101 Park Avenue are located in which city?",
+  "What is the required coolant flow rate for the GT-500 engine?",
   "Our GT-500 is running at 45 LPM coolant flow. Is this within spec?",
-  "What is the maintenance schedule for the GT-500 cooling system? When should the pump be replaced?",
-  "What firmware version is required for GT-500 units and what does it control?",
-  "What temperature range should the GT-500 operate at, and what is the coolant pressure requirement?",
   "Has there been any safety update to the GT-500 cooling specifications since the original manual?",
-  "What is the alert threshold for GT-500 coolant flow rate and what should we do if flow drops below it?",
 ];
 
 function randomSample() {

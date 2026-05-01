@@ -6,7 +6,7 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
 
 LLM_MODEL = "gemini-2.5-flash"
-WEAK_LLM_MODEL = "gemma-3-27b-it"
+WEAK_LLM_MODEL = "gemma-3-1b-it"
 EMBEDDING_MODEL = "models/gemini-embedding-001"
 
 RETRIEVAL_TOP_K = 3
