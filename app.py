@@ -82,7 +82,7 @@ def serve_index() -> FileResponse:
 
 def _run_agent_pipeline(query: str) -> dict[str, str]:
     import re
-    llm = get_llm(temperature=0.3)
+    llm = get_llm(temperature=0.3, weak=True)
     steps: list[str] = []
 
     plan_response = llm.invoke(AGENT_PLAN.format(query=query))
