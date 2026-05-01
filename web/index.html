@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/style.css?v=4" />
   </head>
   <body>
     <div class="page">
@@ -42,6 +42,7 @@
               </div>
             </div>
             <div class="form-actions">
+              <button class="tertiary" type="button" id="generate">Generate answer</button>
               <button class="primary" type="submit">Run analysis</button>
               <button class="secondary" type="button" id="sample">Load sample</button>
             </div>
@@ -62,6 +63,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=4"></script>
   </body>
 </html>

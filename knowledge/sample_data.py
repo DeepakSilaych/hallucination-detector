@@ -1,6 +1,50 @@
 SAMPLE_DOCUMENTS = [
     {
         "text": (
+            "GT-500 Industrial Engine Operations Manual (MNL-GT500-01, v1.0.0, "
+            "October 15, 2022). Section 3.4: Cooling System Specifications. "
+            "The GT-500 utilizes a closed-loop liquid cooling system designed for "
+            "continuous high-load operations. Standard Operating Temperature: "
+            "85°C - 95°C. Required Flow Rate: 45 Liters per Minute (LPM). "
+            "Coolant Pressure: 2.5 Bar. Operating the engine at flow rates below "
+            "40 LPM for extended periods may trigger the automatic shutdown "
+            "sequence to protect the piston assemblies."
+        ),
+        "source": "GT500_Manual_v1",
+    },
+    {
+        "text": (
+            "GT-500 Manual Maintenance Schedule: Inspect cooling hoses every "
+            "500 hours of operation. Replace the main pump assembly every 2,500 "
+            "hours to ensure consistent pressure levels."
+        ),
+        "source": "GT500_Manual_v1",
+    },
+    {
+        "text": (
+            "TECHNICAL SAFETY BULLETIN GT-500 (TSB-2025-042, CRITICAL/MANDATORY, "
+            "February 12, 2025). Subject: Cooling System Flow Rate Revision. "
+            "Following comprehensive hardware stress testing in Q4 2024, a critical "
+            "vulnerability was identified in the GT-500 cooling architecture during "
+            "peak load cycles. Original specifications in Manual v1.0 (2022) are "
+            "now considered insufficient for modern operating environments."
+        ),
+        "source": "GT500_Safety_Bulletin_2025",
+    },
+    {
+        "text": (
+            "GT-500 Safety Bulletin TSB-2025-042: URGENT - The previous standard "
+            "of 45 LPM has been found to cause micro-fractures in the cylinder "
+            "lining over long-term use. New Operating Standards effective immediately: "
+            "Mandatory Flow Rate: 60 Liters per Minute (LPM). Alert Threshold: "
+            "55 LPM. Any system operating at the legacy rate of 45 LPM must be "
+            "taken offline and updated to firmware v2.1 which locks the minimum "
+            "pump output to 60 LPM."
+        ),
+        "source": "GT500_Safety_Bulletin_2025",
+    },
+    {
+        "text": (
             "The Earth orbits the Sun at an average distance of approximately "
             "93 million miles or 150 million kilometers. This distance is "
             "defined as one Astronomical Unit (AU)."

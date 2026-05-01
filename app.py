@@ -8,6 +8,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from graph import build_graph
+from prompts import AGENT_PLAN, AGENT_REASON, AGENT_ANSWER
+from utils.llm import get_llm
+from knowledge.store import search as kb_search
 
 APP_DIR = Path(__file__).resolve().parent
 WEB_DIR = APP_DIR / "web"
@@ -52,6 +55,10 @@ def _get_graph():
     return _graph
 
 
+class GenerateRequest(BaseModel):
+    query: str = Field(..., min_length=1)
+
+
 class AnalyzeRequest(BaseModel):
     query: str = Field(..., min_length=1)
     answer: str = Field(..., min_length=1)
@@ -71,6 +78,54 @@ def serve_index() -> FileResponse:
     if not WEB_INDEX.exists():
         raise HTTPException(status_code=404, detail="Index file not found")
     return FileResponse(WEB_INDEX)
+
+
+def _run_agent_pipeline(query: str) -> dict[str, str]:
+    import re
+    llm = get_llm(temperature=0.3)
+    steps: list[str] = []
+
+    plan_response = llm.invoke(AGENT_PLAN.format(query=query))
+    plan_text = re.sub(r"```(?:json)?\s*", "", plan_response.content).strip().removesuffix("```").strip()
+    try:
+        sub_queries = json.loads(plan_text)
+        if not isinstance(sub_queries, list):
+            sub_queries = [query]
+    except json.JSONDecodeError:
+        sub_queries = [query]
+    steps.append(f"[Plan] Identified sub-queries: {sub_queries}")
+
+    all_results: list[str] = []
+    for sq in sub_queries:
+        docs = kb_search(sq, k=2)
+        steps.append(f"[Search] '{sq}' → {len(docs)} results:")
+        for doc in docs:
+            steps.append(f"  - {doc[:200]}")
+        all_results.extend(docs)
+
+    search_block = "\n---\n".join(all_results) if all_results else "No relevant documents found."
+
+    reason_response = llm.invoke(AGENT_REASON.format(
+        query=query, search_results=search_block,
+    ))
+    reasoning = reason_response.content.strip()
+    steps.append(f"[Reason] {reasoning}")
+
+    answer_response = llm.invoke(AGENT_ANSWER.format(
+        query=query, reasoning=reasoning,
+    ))
+    answer = answer_response.content.strip()
+
+    process = "\n\n".join(steps)
+    return {"answer": answer, "process": process}
+
+
+@app.post("/api/generate")
+def generate(payload: GenerateRequest) -> dict[str, str]:
+    try:
+        return _run_agent_pipeline(payload.query)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @app.post("/api/analyze")

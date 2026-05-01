@@ -2,14 +2,26 @@ const form = document.getElementById("analysis-form");
 const output = document.getElementById("output");
 const statusEl = document.getElementById("status");
 const sampleBtn = document.getElementById("sample");
+const generateBtn = document.getElementById("generate");
 const livePanel = document.getElementById("live-panel");
+const queryEl = document.getElementById("query");
+const answerEl = document.getElementById("answer");
+const processEl = document.getElementById("process");
 
-const SAMPLE = {
-  query: "Is it true that the Earth is flat?",
-  answer: "Yes, the Earth is flat. It has been proven by many scientists.",
-  process:
-    "The user asked about the shape of the Earth. I recalled that there are flat Earth theories. Based on this, I concluded the Earth is flat and scientists have confirmed it.",
-};
+const SAMPLES = [
+  "What is the required coolant flow rate for the GT-500 engine and what happens if it drops too low?",
+  "What are the current mandatory operating specifications for the GT-500 cooling system?",
+  "Our GT-500 is running at 45 LPM coolant flow. Is this within spec?",
+  "What is the maintenance schedule for the GT-500 cooling system? When should the pump be replaced?",
+  "What firmware version is required for GT-500 units and what does it control?",
+  "What temperature range should the GT-500 operate at, and what is the coolant pressure requirement?",
+  "Has there been any safety update to the GT-500 cooling specifications since the original manual?",
+  "What is the alert threshold for GT-500 coolant flow rate and what should we do if flow drops below it?",
+];
+
+function randomSample() {
+  return SAMPLES[Math.floor(Math.random() * SAMPLES.length)];
+}
 
 const DEFAULT_NODES = [
   "claim_decomposer",
@@ -423,17 +435,44 @@ async function streamAnalysis(payload) {
 }
 
 sampleBtn.addEventListener("click", () => {
-  document.getElementById("query").value = SAMPLE.query;
-  document.getElementById("answer").value = SAMPLE.answer;
-  document.getElementById("process").value = SAMPLE.process;
+  queryEl.value = randomSample();
+  answerEl.value = "";
+  processEl.value = "";
+  setStatus("Sample loaded. Click 'Generate answer' to get the LLM's response.");
+});
+
+generateBtn.addEventListener("click", async () => {
+  const query = queryEl.value.trim();
+  if (!query) {
+    setStatus("Enter a query first.");
+    return;
+  }
+  generateBtn.disabled = true;
+  setStatus("Generating answer...");
+  try {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    });
+    if (!res.ok) throw new Error((await res.text()) || "Generation failed");
+    const data = await res.json();
+    answerEl.value = data.answer || "";
+    processEl.value = data.process || "";
+    setStatus("Answer generated. Review and click Run analysis.");
+  } catch (error) {
+    setStatus(`Generation failed: ${error.message}`);
+  } finally {
+    generateBtn.disabled = false;
+  }
 });
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const payload = {
-    query: document.getElementById("query").value.trim(),
-    answer: document.getElementById("answer").value.trim(),
-    process: document.getElementById("process").value.trim(),
+    query: queryEl.value.trim(),
+    answer: answerEl.value.trim(),
+    process: processEl.value.trim(),
   };
   try {
     await streamAnalysis(payload);

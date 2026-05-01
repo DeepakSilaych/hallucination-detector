@@ -1,3 +1,29 @@
+AGENT_PLAN = (
+    "You are an AI research assistant. Given a user's question, identify "
+    "2-4 specific sub-questions or information needs you would search for "
+    "to answer it thoroughly.\n\n"
+    "Question: {query}\n\n"
+    'Return ONLY a JSON array of search queries. Example: ["query one", "query two"]\n'
+)
+
+AGENT_REASON = (
+    "You are an AI research assistant. Based on the search results below, "
+    "reason through the evidence to build toward an answer.\n\n"
+    "Original question: {query}\n\n"
+    "Search results:\n{search_results}\n\n"
+    "Analyze the evidence. Note what is well-supported, what is uncertain, "
+    "and any gaps. Provide your reasoning only, not a final answer yet.\n\n"
+    "Reasoning:"
+)
+
+AGENT_ANSWER = (
+    "You are an AI research assistant. Using your reasoning below, "
+    "produce a final concise answer to the user's question.\n\n"
+    "Question: {query}\n\n"
+    "Your reasoning:\n{reasoning}\n\n"
+    "Final answer:"
+)
+
 CLAIM_DECOMPOSE = (
     "You are analyzing an LLM's response for hallucination detection.\n\n"
     "Given the original question, the LLM's reasoning/tool calls, and its final answer, "

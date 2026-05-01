@@ -138,6 +138,17 @@ button {
   color: #7d4c00;
 }
 
+.tertiary {
+  background: rgba(15, 123, 108, 0.12);
+  color: var(--accent);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 button:hover {
   transform: translateY(-1px);
 }
